@@ -1,0 +1,40 @@
+{
+  "name": "snap-volume-plugin",
+  "description": "A custom Docker volume plugin",
+  "version": "1.0",
+  "documentation": "https://example.com/my-volume-plugin-docs",
+  "interface": {
+    "types": [
+      {
+        "name": "snapvol",
+        "version": "1.0"
+      }
+    ]
+  },
+  "capabilities": {
+    "fs": ["local"],
+    "volumes": ["create", "remove", "mount", "unmount"]
+  },
+  "mount": {
+    "type": "bind",
+    "options": ["rshared", "rw"]
+  },
+  "create": {
+    "type": "json",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "size": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        }
+      },
+      "required": ["size"]
+    }
+  },
+  "remove": {
+    "type": "json"
+  }
+}
