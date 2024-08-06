@@ -2,9 +2,15 @@ FROM golang:1.18 as builder
 
 WORKDIR /app
 
-COPY . .
+COPY go.mod go.sum ./
 
-RUN go build -o snapvol main.go plugin_api.go app/btrfs_manager.go
+RUN go mod download
+
+COPY app/main.go .
+COPY app/plugin_api.go .
+COPY app/btrfs_manager.go .
+
+RUN go build -o snapvol main.go plugin_api.go btrfs_manager.go
 
 FROM alpine:latest
 

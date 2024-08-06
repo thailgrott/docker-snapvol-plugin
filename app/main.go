@@ -5,15 +5,14 @@ import (
     "net/http"
     "os"
     "github.com/gorilla/mux"
-    "snapvol/app"
 )
 
 func main() {
     log.SetOutput(os.Stdout)
     log.SetFlags(log.LstdFlags | log.Lshortfile)
 
-    btrfsManager := app.NewBtrfsManager("/var/lib/docker-snap-volumes")
-    pluginAPI := app.NewPluginAPI(btrfsManager)
+    btrfsManager := NewBtrfsManager("/var/lib/docker-snap-volumes")
+    pluginAPI := NewPluginAPI(btrfsManager)
 
     router := mux.NewRouter()
     router.HandleFunc("/VolumeDriver.Create", pluginAPI.CreateVolume).Methods("POST")
