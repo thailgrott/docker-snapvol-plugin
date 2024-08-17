@@ -1,12 +1,12 @@
 {
-  "name": "snap-volume-plugin",
-  "description": "A custom Docker volume plugin",
+  "name": "snapvol",
+  "description": "A custom Docker volume plugin for BTRFS snapshot management",
   "version": "1.0",
   "documentation": "https://example.com/my-volume-plugin-docs",
   "interface": {
     "types": [
       {
-        "name": "snapvol",
+        "name": "docker.volume",
         "version": "1.0"
       }
     ]
