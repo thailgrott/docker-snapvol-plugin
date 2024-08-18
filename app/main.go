@@ -22,7 +22,7 @@ type VolumeDriverCapabilitiesResponse struct {
 }
 
 func main() {
-    btrfsManager := NewBtrfsManager() // Initialize your BtrfsManager
+    btrfsManager := NewBtrfsManager("/var/lib/docker-snap-volumes") // Initialize your BtrfsManager
     pluginAPI := NewPluginAPI(btrfsManager) // Create an instance of PluginAPI
 
     r := mux.NewRouter()
