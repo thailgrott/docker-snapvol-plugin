@@ -22,6 +22,9 @@ type VolumeDriverCapabilitiesResponse struct {
 }
 
 func main() {
+    btrfsManager := NewBtrfsManager() // Initialize your BtrfsManager
+    pluginAPI := NewPluginAPI(btrfsManager) // Create an instance of PluginAPI
+
     r := mux.NewRouter()
 
     // Handle the /Plugin.Activate route
@@ -40,10 +43,10 @@ func main() {
     }).Methods("POST")
 
     // Handle routes for the standard Docker volume plugin functionality
-    r.HandleFunc("/VolumeDriver.Create", CreateVolume).Methods("POST")
-    r.HandleFunc("/VolumeDriver.Remove", RemoveVolume).Methods("POST")
-    r.HandleFunc("/VolumeDriver.Mount", MountVolume).Methods("POST")
-    r.HandleFunc("/VolumeDriver.Unmount", UnmountVolume).Methods("POST")
+    r.HandleFunc("/VolumeDriver.Create", pluginAPI.CreateVolume).Methods("POST")
+    r.HandleFunc("/VolumeDriver.Remove", pluginAPI.RemoveVolume).Methods("POST")
+    r.HandleFunc("/VolumeDriver.Mount", pluginAPI.MountVolume).Methods("POST")
+    r.HandleFunc("/VolumeDriver.Unmount", pluginAPI.UnmountVolume).Methods("POST")
 
     // Start the HTTP server
     log.Println("Starting the SnapVol Docker Volume Plugin")

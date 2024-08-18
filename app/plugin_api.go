@@ -26,13 +26,14 @@ func (api *PluginAPI) PluginActivate(w http.ResponseWriter, r *http.Request) {
 // Handle the capabilities of the plugin
 func (api *PluginAPI) VolumeDriverCapabilities(w http.ResponseWriter, r *http.Request) {
     response := map[string]interface{}{
-        "Capabilities": map[string]bool{
+        "Capabilities": map[string]interface{}{
             "Scope": "local",
         },
     }
     json.NewEncoder(w).Encode(response)
 }
 
+// The following methods are the same as in your original code
 func (api *PluginAPI) CreateVolume(w http.ResponseWriter, r *http.Request) {
     var req map[string]interface{}
     if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
