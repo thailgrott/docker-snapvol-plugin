@@ -15,6 +15,24 @@ func NewPluginAPI(btrfsManager *BtrfsManager) *PluginAPI {
     }
 }
 
+// Handle the activation of the plugin
+func (api *PluginAPI) PluginActivate(w http.ResponseWriter, r *http.Request) {
+    response := map[string]interface{}{
+        "Implements": []string{"VolumeDriver"},
+    }
+    json.NewEncoder(w).Encode(response)
+}
+
+// Handle the capabilities of the plugin
+func (api *PluginAPI) VolumeDriverCapabilities(w http.ResponseWriter, r *http.Request) {
+    response := map[string]interface{}{
+        "Capabilities": map[string]bool{
+            "Scope": "local",
+        },
+    }
+    json.NewEncoder(w).Encode(response)
+}
+
 func (api *PluginAPI) CreateVolume(w http.ResponseWriter, r *http.Request) {
     var req map[string]interface{}
     if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
