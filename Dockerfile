@@ -19,7 +19,8 @@ WORKDIR /usr/local/bin
 COPY config.json .
 COPY --from=builder /app/snapvol .
 
-# Ensure the directory for the Unix socket exists
-RUN mkdir -p /var/run/docker/plugins
+RUN mkdir -p /run/docker/plugins
+RUN chmod 755 /run/docker/plugins
+
 
 ENTRYPOINT ["./snapvol"]

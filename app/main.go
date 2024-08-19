@@ -50,7 +50,7 @@ func main() {
     r.HandleFunc("/VolumeDriver.Unmount", pluginAPI.UnmountVolume).Methods("POST")
 
     // Define the Unix socket path
-    socketPath := "/var/run/docker/plugins/snapvol.sock"
+    socketPath := "/run/docker/plugins/snapvol.sock"
 
     // Remove any existing socket file
     if _, err := os.Stat(socketPath); err == nil {
