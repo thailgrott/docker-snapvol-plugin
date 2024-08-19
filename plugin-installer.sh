@@ -3,7 +3,7 @@
 basepath="/opt/snapvol-plugin"
 plugin_binary="snapvol"
 
-docker build --no-cache -t snapvol .
+docker build --no-cache -t ${plugin_binary} .
 
 docker plugin disable snapvol-plugin:latest
 
