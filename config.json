@@ -1,40 +1,16 @@
 {
-  "name": "snapvol",
-  "description": "A custom Docker volume plugin for BTRFS snapshot management",
-  "version": "1.0",
-  "documentation": "https://example.com/my-volume-plugin-docs",
-  "interface": {
-    "types": [
-      {
-        "name": "docker.volume",
-        "version": "1.0"
-      }
-    ]
-  },
-  "capabilities": {
-    "fs": ["local"],
-    "volumes": ["create", "remove", "mount", "unmount"]
-  },
-  "mount": {
-    "type": "bind",
-    "options": ["rshared", "rw"]
-  },
-  "create": {
-    "type": "json",
-    "schema": {
-      "type": "object",
-      "properties": {
-        "size": {
-          "type": "string"
-        },
-        "path": {
-          "type": "string"
-        }
-      },
-      "required": ["size"]
-    }
-  },
-  "remove": {
-    "type": "json"
-  }
-}
+    "Name": "snapvol-plugin",
+    "Description": "SnapVol Docker Volume Plugin",
+    "Documentation": "https://example.com/snapvol-plugin",
+    "Entrypoint": ["/usr/local/bin/snapvol"],
+    "Interface": {
+      "Socket": "snapvol.sock",
+      "Types": ["docker.volumedriver/1.0"]
+    },
+    "Linux": {
+      "AllowAllDevices": false,
+      "Capabilities": ["CAP_SYS_ADMIN"]
+    },
+    "Env": null,
+    "Mounts": null
+  }  
