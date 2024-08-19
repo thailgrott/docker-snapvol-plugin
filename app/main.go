@@ -62,6 +62,11 @@ func main() {
         log.Fatalf("Error creating Unix socket listener: %v", err)
     }
 
+    // Adjust the file permissions of the socket
+    if err := os.Chmod(socketPath, 0600); err != nil {
+        log.Fatalf("Error setting permissions on the Unix socket: %v", err)
+    }
+
     // Start the HTTP server on the Unix socket
     log.Println("Starting the SnapVol Docker Volume Plugin")
     err = http.Serve(listener, r)
