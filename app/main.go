@@ -48,9 +48,23 @@ func main() {
     r.HandleFunc("/VolumeDriver.Mount", pluginAPI.MountVolume).Methods("POST")
     r.HandleFunc("/VolumeDriver.Unmount", pluginAPI.UnmountVolume).Methods("POST")
 
-    // Start the HTTP server
+    // Define the Unix socket path
+    socketPath := "/run/docker/plugins/snapvol.sock"
+
+    // Remove any existing socket file
+    if _, err := os.Stat(socketPath); err == nil {
+        os.Remove(socketPath)
+    }
+
+    // Create a Unix socket listener
+    listener, err := net.Listen("unix", socketPath)
+    if err != nil {
+        log.Fatalf("Error creating Unix socket listener: %v", err)
+    }
+
+    // Start the HTTP server on the Unix socket
     log.Println("Starting the SnapVol Docker Volume Plugin")
-    err := http.ListenAndServe("/run/docker/plugins/snapvol.sock", r)
+    err = http.Serve(listener, r)
     if err != nil {
         log.Fatalf("Error starting server: %v", err)
         os.Exit(1)
