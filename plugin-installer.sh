@@ -5,10 +5,11 @@ plugin_binary="snapvol"
 
 docker build --no-cache -t snapvol .
 
-mkdir -p ${basepath}
+docker plugin disable snapvol-plugin:latest
 
 docker run -d --name temp_snapvol ${plugin_binary} sleep infinity
 
+mkdir -p ${basepath}
 docker cp temp_snapvol:/usr/local/bin/${plugin_binary} ${basepath}
 docker cp temp_snapvol:/usr/local/bin/config.json ${basepath}
 
