@@ -16,8 +16,9 @@ docker run --rm -it --name temp_snapvol --entrypoint /bin/sh \
 -v ${basepath}:/mnt snapvol \
 -c "cd / && tar czf /mnt/snapvol-plugin.tar.gz bin sbin usr/bin usr/sbin lib usr/lib etc config.json"
 
+mkdir -p ${basepath}/rootfs
 tar -xzf ${basepath}/snapvol-plugin.tar.gz -C ${basepath} config.json
-tar -xzf ${basepath}/snapvol-plugin.tar.gz -C ${basepath}/rootfs/ .
+tar -xzf ${basepath}/snapvol-plugin.tar.gz -C ${basepath}/rootfs/
 
 # Make sure the socket directory exists and is writable by the Docker daemon.
 mkdir -p /run/docker/plugins
