@@ -49,7 +49,7 @@ The installer script should unregister any previous plugin from a previous insta
 1. Create a volume:
 
 ```sh
-docker volume create -d snap-volume-plugin myvolume
+docker volume create -d snapvol-plugin myvolume
 ```
 
 2. List volumes:
