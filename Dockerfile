@@ -16,9 +16,10 @@ FROM alpine:latest
 
 RUN apk add --no-cache btrfs-progs
 
+COPY config.json .
+
 WORKDIR /usr/local/bin
 
-COPY config.json .
 COPY --from=builder /app/snapvol .
 
 RUN mkdir -p /run/docker/plugins
