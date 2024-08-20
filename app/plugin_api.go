@@ -40,12 +40,19 @@ func (api *PluginAPI) CreateVolume(w http.ResponseWriter, r *http.Request) {
         http.Error(w, err.Error(), http.StatusBadRequest)
         return
     }
-    name := req["Name"].(string)
+    name, ok := req["Name"].(string)
+    if !ok {
+        http.Error(w, "Invalid or missing 'Name' in request", http.StatusBadRequest)
+        return
+    }
 
+    log.Printf("Received create volume request: %+v", req)
     if err := api.btrfsManager.CreateVolume(name); err != nil {
+        log.Printf("Error creating volume %s: %v", name, err)
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
     }
+    log.Printf("Volume %s created successfully", name)
 
     w.WriteHeader(http.StatusOK)
     json.NewEncoder(w).Encode(map[string]string{"Mountpoint": api.btrfsManager.GetMountPoint(name)})
