@@ -14,6 +14,8 @@ RUN CGO_ENABLED=0 go build -o snapvol main.go plugin_api.go btrfs_manager.go
 
 FROM alpine:latest
 
+RUN apk add --no-cache btrfs-progs
+
 WORKDIR /usr/local/bin
 
 COPY config.json .
