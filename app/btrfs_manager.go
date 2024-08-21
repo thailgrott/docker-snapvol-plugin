@@ -18,7 +18,7 @@ func NewBtrfsManager(mountPoint string) *BtrfsManager {
 func (m *BtrfsManager) CreateVolume(name string) error {
     volumePath := fmt.Sprintf("%s/%s", m.mountPoint, name)
     if err := os.MkdirAll(volumePath, 0755); err != nil {
-        return err
+        return fmt.Errorf("failed to create directory %s: %w", volumePath, err)
     }
     cmd := exec.Command("btrfs", "subvolume", "create", volumePath)
     return cmd.Run()
