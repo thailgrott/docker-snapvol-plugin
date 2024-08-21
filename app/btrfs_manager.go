@@ -21,7 +21,11 @@ func (m *BtrfsManager) CreateVolume(name string) error {
         return fmt.Errorf("failed to create directory %s: %w", volumePath, err)
     }
     cmd := exec.Command("btrfs", "subvolume", "create", volumePath)
-    return cmd.Run()
+    err := cmd.Run()
+    if err != nil {
+        log.Printf("Error running btrfs command: %v", err)
+    }
+    return err
 }
 
 func (m *BtrfsManager) RemoveVolume(name string) error {
