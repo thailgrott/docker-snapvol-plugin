@@ -3,6 +3,7 @@ package main
 import (
     "encoding/json"
     "log"
+    "log/syslog"
     "net"
     "net/http"
     "os"
@@ -68,6 +69,13 @@ func main() {
         log.Fatalf("Error setting permissions on the Unix socket: %v", err)
     }
 
+    // Connect to the syslog daemon
+    syslogger, err := syslog.New(syslog.LOG_NOTICE, "snapvol-plugin")
+    if err != nil {
+        log.Fatalf("Failed to connect to syslog: %v", err)
+    }
+    log.SetOutput(syslogger)
+    
     // Start the HTTP server on the Unix socket
     log.Println("Starting the SnapVol Docker Volume Plugin")
     err = http.Serve(listener, r)
