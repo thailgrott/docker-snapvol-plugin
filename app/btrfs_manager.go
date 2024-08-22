@@ -39,26 +39,53 @@ func (m *BtrfsManager) isBtrfsVolume(path string) error {
 // CreateVolume creates a new BTRFS subvolume
 func (m *BtrfsManager) CreateVolume(name string) error {
     volumePath := filepath.Join(m.volumeStorePath, name)
-    
+
+    // Log the creation process
+    log.Printf("Attempting to create BTRFS volume: %s", volumePath)
+
+    // Check if the mount point is a BTRFS volume
     if err := m.isBtrfsVolume(m.mountPoint); err != nil {
         log.Printf("Mount point check failed: %v", err)
         return err
     }
 
-    // Check if the volumeStorePath directory exists, create if not
+    // Check if the volume store directory exists
     if _, err := os.Stat(m.volumeStorePath); os.IsNotExist(err) {
+        log.Printf("Volume store path does not exist, attempting to create it: %s", m.volumeStorePath)
         if err := os.MkdirAll(m.volumeStorePath, 0755); err != nil {
+            log.Printf("Failed to create volume store directory: %v", err)
             return fmt.Errorf("failed to create directory %s: %w", m.volumeStorePath, err)
         }
-    }
-
-    cmd := exec.Command("btrfs", "subvolume", "create", volumePath)
-    if err := cmd.Run(); err != nil {
-        log.Printf("Error running btrfs command: %v", err)
+    } else if err != nil {
+        log.Printf("Error checking volume store path: %v", err)
         return err
     }
+
+    // Check if the volume directory already exists
+    if _, err := os.Stat(volumePath); !os.IsNotExist(err) {
+        if err == nil {
+            log.Printf("Volume path already exists: %s", volumePath)
+            return fmt.Errorf("volume path already exists: %s", volumePath)
+        }
+        log.Printf("Error checking volume path: %v", err)
+        return err
+    }
+
+    // Create the BTRFS subvolume
+    cmd := exec.Command("btrfs", "subvolume", "create", volumePath)
+    log.Printf("Running command: %s", cmd.String())
+    
+    output, err := cmd.CombinedOutput()
+    if err != nil {
+        log.Printf("Error executing: %v", err)
+        log.Printf("Command output: %s", string(output))
+        return err
+    }
+
+    log.Printf("Successfully created BTRFS volume: %s", volumePath)
     return nil
 }
+
 
 // RemoveVolume deletes a BTRFS subvolume
 func (m *BtrfsManager) RemoveVolume(name string) error {
