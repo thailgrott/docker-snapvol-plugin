@@ -2,13 +2,22 @@ package main
 
 import (
     "encoding/json"
+    "fmt"
     "log"
     "log/syslog"
     "net"
     "net/http"
     "os"
+    "os/exec"
+    "path/filepath"
 
     "github.com/gorilla/mux"
+)
+
+const (
+	driverName = "snapvol-plugin"
+	runPath    = "/run/docker/plugins"
+	socketName = "snapvol.sock"
 )
 
 // PluginActivateResponse represents the response to the /Plugin.Activate request
@@ -22,6 +31,34 @@ type VolumeDriverCapabilitiesResponse struct {
         Scope string `json:"Scope"`
     } `json:"Capabilities"`
 }
+
+func getPluginSocketPath() (string, error) {
+	// Execute the Docker command to inspect the plugin
+	cmd := exec.Command("docker", "plugin", "inspect", driverName)
+	output, err := cmd.Output()
+	if err != nil {
+		return "", fmt.Errorf("error running docker plugin inspect: %w", err)
+	}
+
+	// Parse the JSON output to get the plugin ID
+	var plugins []struct {
+		ID string `json:"Id"`
+	}
+	if err := json.Unmarshal(output, &plugins); err != nil {
+		return "", fmt.Errorf("error parsing JSON output: %w", err)
+	}
+
+	if len(plugins) == 0 {
+		return "", fmt.Errorf("no plugin found with the name %s", driverName)
+	}
+
+	// Build the socket path
+	pluginID := plugins[0].ID
+	socketPath := filepath.Join(runPath, "plugins", pluginID, socketName)
+
+	return socketPath, nil
+}
+
 
 func main() {
     btrfsManager := NewBtrfsManager("/var/lib/docker-snap-volumes") // Initialize your BtrfsManager
@@ -52,6 +89,13 @@ func main() {
 
     // Define the Unix socket path
     socketPath := "/run/docker/plugins/snapvol.sock"
+
+	socketPath, err := getPluginSocketPath()
+	if err != nil {
+		log.Fatalf("Failed to get plugin socket path: %v", err)
+	}
+
+	fmt.Println("Socket path:", socketPath)
 
     // Remove any existing socket file
     if _, err := os.Stat(socketPath); err == nil {
