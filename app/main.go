@@ -54,7 +54,12 @@ func getPluginSocketPath() (string, error) {
 
 	// Build the socket path
 	pluginID := plugins[0].ID
-	socketPath := filepath.Join(runPath, "plugins", pluginID, socketName)
+	socketPath := filepath.Join(runPath, pluginID, socketName)
+
+    // Check if the socket file exists
+    if _, err := os.Stat(socketPath); os.IsNotExist(err) {
+        return "", fmt.Errorf("socket file does not exist at path %s", socketPath)
+    }
 
 	return socketPath, nil
 }
@@ -87,19 +92,19 @@ func main() {
     r.HandleFunc("/VolumeDriver.Mount", pluginAPI.MountVolume).Methods("POST")
     r.HandleFunc("/VolumeDriver.Unmount", pluginAPI.UnmountVolume).Methods("POST")
 
-    // Define the Unix socket path
-    socketPath := "/run/docker/plugins/snapvol.sock"
+    // Get the correct Unix socket path
+    socketPath, err := getPluginSocketPath()
+    if err != nil {
+        log.Fatalf("Failed to get plugin socket path: %v", err)
+    }
 
-	socketPath, err := getPluginSocketPath()
-	if err != nil {
-		log.Fatalf("Failed to get plugin socket path: %v", err)
-	}
-
-	fmt.Println("Socket path:", socketPath)
+    fmt.Println("Socket path:", socketPath)
 
     // Remove any existing socket file
     if _, err := os.Stat(socketPath); err == nil {
-        os.Remove(socketPath)
+        if err := os.Remove(socketPath); err != nil {
+            log.Fatalf("Failed to remove existing socket file: %v", err)
+        }
     }
 
     // Create a Unix socket listener
